@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ARC // Neural Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="bg"></div>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot" id="statusDot"></div>
+      <div class="name display">ARC CONSOLE</div>
+      <div class="sub" id="providerBadge">v2 // MULTI-AI LINK</div>
+    </div>
+    <div class="topbar-right">
+      <div id="clock">--:--:--</div>
+      <div class="iconbtn" id="toolsBtn" title="System HUD & Local Tools">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v14H4z"/><path d="m7 9 3 3-3 3M12 15h5"/></svg>
+      </div>
+      <div class="iconbtn" id="logToggleMobile" title="Transcript">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      </div>
+      <div class="iconbtn" id="settingsBtn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.56 1z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage">
+    <div class="core-wrap">
+      <div class="hud-chrome">
+        <div class="hud-scanbar b1"></div>
+        <div class="hud-scanbar b2"></div>
+        <div class="hud-bracket tl"></div>
+        <div class="hud-bracket br"></div>
+        <div class="hud-compass"><div class="dot"></div></div>
+
+        <!-- Machine-aware HUD. Values are populated from browser/device APIs. -->
+        <div class="machine-hud hud-left">
+          <div class="machine-hud-title display">LOCAL NODE</div>
+          <div class="hud-data-row"><span>DEVICE</span><b id="hudDevice">PC</b></div>
+          <div class="hud-data-row"><span>PLATFORM</span><b id="hudPlatform">--</b></div>
+          <div class="hud-data-row"><span>CPU</span><b id="hudCpu">--</b></div>
+          <div class="hud-data-row"><span>MEM</span><b id="hudMem">--</b></div>
+          <div class="hud-data-row"><span>DISPLAY</span><b id="hudScreen">--</b></div>
+          <div class="hud-data-row"><span>BROWSER</span><b id="hudBrowser">--</b></div>
+        </div>
+
+        <div class="machine-hud hud-right">
+          <div class="machine-hud-title display">TELEMETRY</div>
+          <div class="hud-data-row"><span>NETWORK</span><b id="hudNet">--</b></div>
+          <div class="hud-data-row"><span>BATTERY</span><b id="hudBattery">--</b></div>
+          <div class="hud-data-row"><span>WEB STORE</span><b id="hudStorage">--</b></div>
+          <div class="hud-data-row"><span>FPS</span><b id="hudFps">--</b></div>
+          <div class="hud-data-row"><span>MIC</span><b id="hudMic">IDLE</b></div>
+          <div class="hud-data-row"><span>WORKSPACE</span><b id="hudWorkspace">NONE</b></div>
+        </div>
+
+        <div class="machine-hud-strip" aria-hidden="true">
+          <span><i>NODE</i><b id="hudNodeCompact">PC</b></span>
+          <span><i>CPU</i><b id="hudCpuCompact">--</b></span>
+          <span><i>NET</i><b id="hudNetCompact">--</b></span>
+          <span><i>FPS</i><b id="hudFpsCompact">--</b></span>
+        </div>
+      </div>
+      <canvas id="coreCanvas" width="460" height="460"></canvas>
+      <div class="status-word off display" id="statusWord">OFFLINE</div>
+      <div class="live-line" id="liveLine"></div>
+      <div class="hint" id="hintLine">Press the power ring to bring the link online.</div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="panel-head">
+        <div class="t">TRANSCRIPT</div>
+        <button id="clearLog">CLEAR</button>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <!-- CONTROL BAR -->
+  <div class="controlbar">
+    <button class="power" id="powerBtn" title="Power">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v9"/><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/></svg>
+    </button>
+    <button class="talkbtn" id="talkBtn" disabled>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg>
+      HOLD TO TALK
+    </button>
+  </div>
+
+</div>
+
+<!-- SYSTEM TOOLS DRAWER -->
+<div class="overlay" id="toolsOverlay"></div>
+<div class="drawer tools-drawer" id="toolsDrawer">
+  <div class="drawer-head">
+    <div class="t">SYSTEM HUD // LOCAL TOOLS</div>
+    <div class="iconbtn" id="toolsClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="drawer-body tools-body">
+    <div class="tool-section">
+      <div class="tool-section-title display">MACHINE TELEMETRY</div>
+      <div class="telemetry-grid">
+        <div><span>NODE</span><b id="toolDevice">--</b></div>
+        <div><span>CPU THREADS</span><b id="toolCpu">--</b></div>
+        <div><span>MEMORY</span><b id="toolMem">--</b></div>
+        <div><span>DISPLAY</span><b id="toolScreen">--</b></div>
+        <div><span>NETWORK</span><b id="toolNet">--</b></div>
+        <div><span>BATTERY</span><b id="toolBattery">--</b></div>
+        <div><span>WEB STORAGE</span><b id="toolStorage">--</b></div>
+        <div><span>FPS</span><b id="toolFps">--</b></div>
+      </div>
+      <div class="note">Browser-reported values are privacy-limited estimates, not unrestricted hardware diagnostics.</div>
+    </div>
+
+    <div class="tool-section">
+      <div class="tool-section-title display">AUTHORIZED FILE WORKSPACE</div>
+      <div class="workspace-status"><span id="workspaceName">NO FOLDER CONNECTED</span><b id="workspacePermission">LOCKED</b></div>
+      <div class="tool-actions">
+        <button class="toolbtn primary" id="workspaceConnectBtn">CONNECT / RECONNECT FOLDER</button>
+        <button class="toolbtn" id="workspaceRefreshBtn">REFRESH</button>
+      </div>
+      <div class="note">ARC can only access the folder you explicitly choose. Chrome/Edge may let you grant persistent access for future visits.</div>
+      <div class="workspace-files" id="workspaceFiles"><div class="empty-state">Grant a folder to view its files.</div></div>
+
+      <label class="tool-label">FILE NAME</label>
+      <input class="tool-input" id="workspaceFileName" type="text" placeholder="notes.txt">
+      <label class="tool-label">TEXT CONTENT</label>
+      <textarea class="tool-textarea" id="workspaceFileContent" rows="6" placeholder="Read a text file or write new content here..."></textarea>
+      <div class="tool-actions three">
+        <button class="toolbtn" id="workspaceReadBtn">READ</button>
+        <button class="toolbtn primary" id="workspaceSaveBtn">SAVE</button>
+        <button class="toolbtn danger" id="workspaceDeleteBtn">DELETE</button>
+      </div>
+
+      <label class="tool-label">NEW FOLDER</label>
+      <div class="tool-inline">
+        <input class="tool-input" id="workspaceFolderName" type="text" placeholder="Project">
+        <button class="toolbtn" id="workspaceCreateFolderBtn">CREATE</button>
+      </div>
+    </div>
+
+    <div class="tool-section">
+      <div class="tool-section-title display">APP LAUNCHPAD</div>
+      <div class="app-launch-grid">
+        <button class="app-launch" data-app="youtube">YOUTUBE</button>
+        <button class="app-launch" data-app="gmail">GMAIL</button>
+        <button class="app-launch" data-app="drive">DRIVE</button>
+        <button class="app-launch" data-app="github">GITHUB</button>
+        <button class="app-launch" data-app="chatgpt">CHATGPT</button>
+        <button class="app-launch" data-app="gemini">GEMINI</button>
+        <button class="app-launch" data-app="claude">CLAUDE</button>
+        <button class="app-launch" data-app="grok">GROK</button>
+        <button class="app-launch" data-app="spotify">SPOTIFY</button>
+        <button class="app-launch windows-only" data-app="windows-settings">WINDOWS SETTINGS</button>
+        <button class="app-launch windows-only" data-app="mic-settings">MIC SETTINGS</button>
+        <button class="app-launch windows-only" data-app="store">MS STORE</button>
+      </div>
+      <div class="note">A browser cannot silently control arbitrary installed programs. ARC can launch web apps and supported Windows URI handlers; the OS/browser remains in control.</div>
+    </div>
+
+    <div class="tool-section">
+      <div class="tool-section-title display">VOICE COMMANDS</div>
+      <div class="command-examples">
+        <code>Jarvis, system status</code>
+        <code>Jarvis, open YouTube</code>
+        <code>Jarvis, list files</code>
+        <code>Jarvis, read file notes.txt</code>
+        <code>Jarvis, create folder Project</code>
+        <code>Jarvis, create file todo.txt saying buy components</code>
+        <code>Jarvis, summarize file report.txt</code>
+        <code>Jarvis, save last reply as answer.txt</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS DRAWER -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="t">CONFIGURATION</div>
+    <div class="iconbtn" id="drawerClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="drawer-body">
+    <div class="field">
+      <label>WAKE WORD(S)</label>
+      <input type="text" id="wakeWords" value="jarvis" placeholder="e.g. jarvis, hey jarvis">
+      <div class="note">Comma-separated. Say one of these to arm the console for a command.</div>
+    </div>
+
+    <div class="field">
+      <label>ACTIVE AI PROVIDER</label>
+      <select id="providerSelect">
+        <option value="openai">ChatGPT / OpenAI</option>
+        <option value="anthropic">Claude / Anthropic</option>
+        <option value="xai">Grok / xAI</option>
+        <option value="gemini" selected>Gemini / Google</option>
+      </select>
+      <div class="note">Only the selected provider is called. You can switch brains without changing the rest of the console.</div>
+    </div>
+
+    <div class="field">
+      <label>OPENAI API KEY</label>
+      <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
+      <label>OPENAI MODEL</label>
+      <input type="text" id="openaiModel" value="gpt-5.6-luna" placeholder="gpt-5.6-luna">
+    </div>
+
+    <div class="field">
+      <label>ANTHROPIC API KEY</label>
+      <input type="password" id="anthropicKey" placeholder="sk-ant-..." autocomplete="off">
+      <label>CLAUDE MODEL</label>
+      <input type="text" id="anthropicModel" value="claude-sonnet-5" placeholder="claude-sonnet-5">
+    </div>
+
+    <div class="field">
+      <label>xAI API KEY</label>
+      <input type="password" id="xaiKey" placeholder="xai-..." autocomplete="off">
+      <label>GROK MODEL</label>
+      <input type="text" id="xaiModel" value="grok-4.6" placeholder="grok-4.6">
+    </div>
+
+    <div class="field">
+      <label>GOOGLE GEMINI API KEY</label>
+      <input type="password" id="geminiKey" placeholder="Google AI Studio API key" autocomplete="off">
+      <label>GEMINI MODEL</label>
+      <input type="text" id="geminiModel" value="gemini-3.5-flash-lite" placeholder="gemini-3.5-flash-lite">
+      <div class="note">Keys are loaded automatically from <b>api-keys.js</b>. You can still temporarily override them here in Settings for the current browser tab.</div>
+      <div class="note" style="color:var(--red);">WARNING: uploading real keys inside api-keys.js to a public GitHub Pages site exposes them to visitors. Use only for a private/personal setup.</div>
+      <div class="note" style="color:var(--amber);">STATIC MODE: requests go directly from your browser to the selected AI provider. Provider browser/CORS policies can change independently of ARC.</div>
+    </div>
+
+    <div class="field">
+      <label>SYSTEM PROMPT</label>
+      <input type="text" id="sysPrompt" value="You are a concise, helpful voice assistant. Keep replies short and speakable.">
+    </div>
+
+    <div class="field">
+      <label>VOICE — CHATGPT / OPENAI</label>
+      <select id="voiceOpenAI"></select>
+      <label>VOICE — CLAUDE / ANTHROPIC</label>
+      <select id="voiceAnthropic"></select>
+      <label>VOICE — GROK / xAI</label>
+      <select id="voiceXAI"></select>
+      <label>VOICE — GEMINI / GOOGLE</label>
+      <select id="voiceGemini"></select>
+      <div class="note" id="voiceNote">Each AI remembers its own voice. Leave a provider on AUTO to use the preferred Google voice when available, otherwise the browser's default voice.</div>
+    </div>
+
+    <div class="field">
+      <div class="togglerow">
+        <label style="margin:0">PREFER GOOGLE VOICE</label>
+        <div class="switch on" id="preferGoogleVoice"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="togglerow">
+        <label style="margin:0">AUTO RE-ARM AFTER REPLY</label>
+        <div class="switch on" id="autoRearm"></div>
+      </div>
+      <div class="note">When on, the console starts listening for the wake word again automatically after it finishes speaking.</div>
+    </div>
+
+    <div class="field">
+      <div class="note" style="border-top:1px solid var(--line); padding-top:14px;">
+        Voice recognition uses the browser SpeechRecognition engine. Voice output uses Web Speech synthesis and preferentially selects a Google voice when Chrome/Edge exposes one. Microphone permission is still required exactly as before.
+      </div>
+    </div>
+  </div>
+  <div class="savebar">
+    <button id="saveSettings">SAVE &amp; CLOSE</button>
+  </div>
+</div>
+
+<script src="api-keys.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>
